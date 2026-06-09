@@ -1,0 +1,65 @@
+{
+  "items": [
+    {
+      "descrizione": "NETTARE S/ZUCCHERI A",
+      "iva": "22%",
+      "prezzo": 2.57,
+      "raw_lines": [
+        "NETTARE S/ZUCCHERI A 22% 2,57"
+      ]
+    },
+    {
+      "descrizione": "BEV.CONAD MELOG/SAMB",
+      "iva": "22%",
+      "prezzo": 1.19,
+      "raw_lines": [
+        "BEV.CONAD MELOG/SAMB 22% 1,19"
+      ]
+    },
+    {
+      "descrizione": "KIWI HAYWARD CPQ N 1",
+      "iva": "4%",
+      "prezzo": 2.68,
+      "raw_lines": [
+        "KIWI HAYWARD CPQ N 1 4% 2,68"
+      ]
+    },
+    {
+      "descrizione": "MANGO S&I GR.380 EST",
+      "iva": "4%",
+      "prezzo": 4.78,
+      "raw_lines": [
+        "2 x 2,39 EUR",
+        "MANGO S&I GR.380 EST 4% 4,78"
+      ],
+      "quantita": 2.0,
+      "prezzo_unitario": 2.39
+    },
+    {
+      "descrizione": "SHOPPERS",
+      "iva": "22%",
+      "prezzo": 0.15,
+      "raw_lines": [
+        "SHOPPERS 22% 0,15"
+      ]
+    }
+  ],
+  "sconti": [
+    {
+      "descrizione": "SCONTO PERCENTUALE",
+      "iva": "4%",
+      "importo": -1.2,
+      "raw_lines": [
+        "* SCONTO PERCENTUALE 4% -1,20"
+      ]
+    }
+  ],
+  "totale": 10.17,
+  "validazione": {
+    "somma_items": 11.37,
+    "somma_sconti": -1.2,
+    "somma_calcolata": 10.17,
+    "match_totale": true
+  },
+  "unparsed_lines": []
+}

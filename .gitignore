@@ -1,0 +1,33 @@
+.venv*
+.env
+__pycache__/
+*.pyc
+*.jpg
+*.jpeg
+
+.env
+__pycache__/
+*.pyc
+*.sublime-workspace
+*.sublime-project
+.stfolder
+
+
+# output parsing
+scontrini_parsati/*.json
+
+# emacs
+*~
+\#*\#
+.\#*
+
+
+.envrc
+
+exports/
+parsed_receipts/
+scontrini_originali/
+trascrizioni/
+
+enriched_risultato.txt
+matchings.txt
