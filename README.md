@@ -186,33 +186,40 @@ trascrizioni/         raw OCR JSON (gitignored)
 
 ---
 
+
 ## Requirements
 
 * Python 3.12+
-* OpenAI API key
+* uv
+* OpenAI API key (only for OCR functionality)
 * Ubuntu or WSL recommended
 
 ---
 
 ## Setup
 
-Create and activate a virtual environment:
+Install dependencies using uv:
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 Create a `.env` file:
 
 ```text
 OPENAI_API_KEY=...
+```
+
+Activate the virtual environment if desired:
+
+```bash
+source .venv/bin/activate
+```
+
+Alternatively, commands can be executed directly through uv:
+
+```bash
+uv run <command>
 ```
 
 ---
@@ -326,8 +333,14 @@ Example:
 Run the test suite:
 
 ```bash
-pytest -v
+uv run pytest -v
 ```
+
+The public test suite does not require:
+
+* real receipts
+* OpenAI API access
+* OCR execution
 
 Versioned fixtures ensure that future parser changes do not break previously supported receipt formats.
 
