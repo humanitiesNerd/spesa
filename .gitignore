@@ -22,6 +22,9 @@ scontrini_parsati/*.json
 .\#*
 
 
+#libreoffice
+.~lock.*.csv#
+
 .envrc
 
 exports/
