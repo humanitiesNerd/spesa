@@ -15,12 +15,21 @@ OUTPUT_CSV = PROJECT_ROOT / "exports" / "items_enriched.csv"
 
 
 REQUIRED_MAPPING_COLUMNS = {
-    "match_type",
     "pattern",
     "description_norm",
     "category",
     "function",
 }
+
+OPTIONAL_MAPPING_COLUMNS = [
+    "reference_quantity",
+    "reference_unit",
+    "normalized_automatically",
+]
+
+
+def has_value(value: object) -> bool:
+    return pd.notna(value) and str(value).strip() != ""
 
 
 def load_mapping() -> pd.DataFrame:
@@ -36,27 +45,8 @@ def load_mapping() -> pd.DataFrame:
     return mapping
 
 
-def apply_contains_mapping(enriched: pd.DataFrame, mapping: pd.DataFrame) -> pd.DataFrame:
-    contains_mapping = mapping[mapping["match_type"] == "contains"]
-
-    for _, row in contains_mapping.iterrows():
-        mask = enriched["description_raw"].str.contains(
-            row["pattern"],
-            case=False,
-            regex=False,
-            na=False,
-        )
-
-        enriched.loc[mask, "description_norm"] = row["description_norm"]
-        enriched.loc[mask, "category"] = row["category"]
-        enriched.loc[mask, "function"] = row["function"]
-
-    return enriched
-
-def apply_exact_mapping(items: pd.DataFrame, mapping: pd.DataFrame) -> pd.DataFrame:
-    exact_mapping = mapping[mapping["match_type"] == "exact"].copy()
-
-    exact_mapping = exact_mapping[
+def apply_mapping(items: pd.DataFrame, mapping: pd.DataFrame) -> pd.DataFrame:
+    mapping_for_merge = mapping[
         [
             "pattern",
             "description_norm",
@@ -73,7 +63,7 @@ def apply_exact_mapping(items: pd.DataFrame, mapping: pd.DataFrame) -> pd.DataFr
     )
 
     enriched = items.merge(
-        exact_mapping,
+        mapping_for_merge,
         on="description_raw",
         how="left",
     )
@@ -88,8 +78,6 @@ def apply_exact_mapping(items: pd.DataFrame, mapping: pd.DataFrame) -> pd.DataFr
 
     enriched["function"] = enriched["mapped_function"]
 
-
-
     enriched = enriched.drop(
         columns=[
             "mapped_description_norm",
@@ -101,33 +89,91 @@ def apply_exact_mapping(items: pd.DataFrame, mapping: pd.DataFrame) -> pd.DataFr
     return enriched
 
 
-def main() -> None:
-    items = pd.read_csv(ITEMS_CSV)
-    mapping = load_mapping()
+def build_missing_mapping_rows(
+    items: pd.DataFrame,
+    mapping: pd.DataFrame,
+) -> pd.DataFrame:
+    existing_patterns = set(mapping["pattern"].dropna().astype(str))
 
-    unsupported_match_types = sorted(
-        set(mapping["match_type"].dropna()) - {"exact", "contains"}
+    missing_items = items[
+        ~items["description_raw"].astype(str).isin(existing_patterns)
+    ].copy()
+
+    if missing_items.empty:
+        return pd.DataFrame(columns=mapping.columns)
+
+    missing_items = missing_items.drop_duplicates(subset=["description_raw"])
+
+    rows: list[dict[str, object]] = []
+
+    for _, item in missing_items.iterrows():
+        description_raw = item["description_raw"]
+
+        row: dict[str, object] = {
+            column: pd.NA
+            for column in mapping.columns
+        }
+
+        row["pattern"] = description_raw
+        row["description_norm"] = pd.NA
+        row["category"] = pd.NA
+        row["function"] = pd.NA
+
+        if "normalized_automatically" in mapping.columns:
+            row["normalized_automatically"] = "todo"
+
+        if (
+            "reference_quantity" in mapping.columns
+            and "quantity" in item
+            and has_value(item["quantity"])
+        ):
+            row["reference_quantity"] = item["quantity"]
+
+        if (
+            "reference_unit" in mapping.columns
+            and "unit" in item
+            and has_value(item["unit"])
+        ):
+            row["reference_unit"] = item["unit"]
+
+        if (
+            "unit_price" in mapping.columns
+            and "unit_price" in item
+            and has_value(item["unit_price"])
+        ):
+            row["unit_price"] = item["unit_price"]
+
+        rows.append(row)
+
+    return pd.DataFrame(rows, columns=mapping.columns)
+
+
+def update_mapping_with_missing_items(
+    items: pd.DataFrame,
+    mapping: pd.DataFrame,
+) -> pd.DataFrame:
+    missing_rows = build_missing_mapping_rows(items, mapping)
+
+    if missing_rows.empty:
+        print("Nessun nuovo prodotto da aggiungere al mapping.")
+        return mapping
+
+    updated_mapping = pd.concat(
+        [mapping, missing_rows],
+        ignore_index=True,
     )
 
-    if unsupported_match_types:
-        raise ValueError(
-            "match_type non supportati in product_mapping.csv: "
-            f"{unsupported_match_types}"
-        )
+    updated_mapping.to_csv(MAPPING_CSV, index=False)
 
-    enriched = apply_exact_mapping(items, mapping)
-    enriched = apply_contains_mapping(enriched, mapping)
-
-    enriched["description_norm"] = (
-    enriched["description_norm"]
-        .fillna(enriched["description_raw"])
+    print(
+        f"Aggiunte {len(missing_rows)} nuove righe incomplete a: "
+        f"{MAPPING_CSV}"
     )
 
+    return updated_mapping
 
 
-
-
-
+def print_reports(enriched: pd.DataFrame) -> None:
     print()
     print("Spesa per prodotto")
     print("------------------")
@@ -142,43 +188,6 @@ def main() -> None:
     product_report["net_amount"] = product_report["net_amount"].round(2)
 
     print(product_report.to_string(index=False))
-
-
-
-
-    
-
-
-
-    
-    enriched["category"] = (
-        enriched["category"]
-        .fillna(enriched["description_norm"])
-    )
-
-
-    enriched["function"] = (
-        enriched["function"]
-        .fillna(enriched["category"])
-    )
-
-    OUTPUT_CSV.parent.mkdir(exist_ok=True)
-
-    enriched.to_csv(OUTPUT_CSV, index=False)
-
-    mapped_count = (
-        enriched["description_raw"] != enriched["category"]
-    ).sum()
-
-    total_count = len(enriched)
-
-    print(f"Salvato: {OUTPUT_CSV}")
-    print(
-        f"Righe aggregate tramite mapping: "
-        f"{mapped_count}/{total_count}"
-    )
-
-
 
     print()
     print("Spesa per categoria")
@@ -195,10 +204,6 @@ def main() -> None:
 
     print(category_report.to_string(index=False))
 
-
-
-
-    
     print()
     print("Spesa per funzione")
     print("------------------")
@@ -208,6 +213,42 @@ def main() -> None:
         .sort_values(ascending=False)
         .round(2)
     )
+
+
+def main() -> None:
+    items = pd.read_csv(ITEMS_CSV)
+    mapping = load_mapping()
+
+    mapping = update_mapping_with_missing_items(items, mapping)
+
+    enriched = apply_mapping(items, mapping)
+
+    enriched["description_norm"] = enriched["description_norm"].fillna(
+        enriched["description_raw"]
+    )
+
+    enriched["category"] = enriched["category"].fillna(
+        enriched["description_norm"]
+    )
+
+    enriched["function"] = enriched["function"].fillna(
+        enriched["category"]
+    )
+
+    OUTPUT_CSV.parent.mkdir(exist_ok=True)
+    enriched.to_csv(OUTPUT_CSV, index=False)
+
+    mapped_count = (
+        enriched["description_raw"] != enriched["category"]
+    ).sum()
+
+    total_count = len(enriched)
+
+    print(f"Salvato: {OUTPUT_CSV}")
+    print(f"Righe aggregate tramite mapping: {mapped_count}/{total_count}")
+
+    print_reports(enriched)
+
 
 if __name__ == "__main__":
     main()
