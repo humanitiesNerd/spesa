@@ -10,7 +10,16 @@ IVA_TOTAL_RE = re.compile(rf"^di cui IVA\s+(?P<iva>{PRICE_RE})$")
 PAYMENT_RE = re.compile(rf"^Pagamento\s+(?P<method>.+?)\s+(?P<amount>{PRICE_RE})$")
 DOCUMENT_RE = re.compile(r"^DOCUMENTO N\.\s*(?P<number>.+)$", re.IGNORECASE)
 DATETIME_RE = re.compile(r"^(?P<date>\d{2}-\d{2}-\d{4})\s+(?P<time>\d{2}:\d{2})$")
-PIVA_RE = re.compile(r"^P\.\s*Iva\s+(?P<piva>\d+)", re.IGNORECASE)
+
+
+
+
+PIVA_RE = re.compile(
+    r"\b(?:P\.?\s*IVA|PI|PARTITA\s+IVA)\s*[:\-]?\s*(?P<piva>\d{11})\b",
+    re.IGNORECASE,
+)
+
+
 
 WEIGHT_QTY_RE = re.compile(
     rf"^(?P<weight>\d+,\d{{3}})\s*kg\s*x\s*(?P<unit>{UNIT_PRICE_RE})\s*EUR/kg$",

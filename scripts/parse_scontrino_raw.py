@@ -1,14 +1,12 @@
-from pathlib import Path
+from __future__ import annotations
+
+from collections.abc import Callable
+from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
 import json
 import re
 import sys
-
-
-
-
-
-
 
 from scripts.receipt_grammars.common import (
     PRICE_RE,
@@ -24,36 +22,92 @@ from scripts.receipt_grammars.common import (
     WEIGHT_QTY_RE,
     SERVICE_RE,
 )
-
 from scripts.receipt_grammars.dok import DOK_INFO_LINE_RE
-
-
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PARSED_DIR = PROJECT_ROOT / "parsed_receipts"
 
 
+# Regex intenzionalmente piccole: riconoscono solo la forma testuale della riga.
+# La semantica viene trasformata subito in dataclass dedicate.
+
 ITEM_RE = re.compile(rf"^(?P<desc>.+?)\s+(?P<iva>{VAT_RE})\s+(?P<price>{PRICE_RE})$")
 
-QTY_RE = re.compile(rf"^(?P<qty>\d+)\s*x\s*(?P<unit>{UNIT_PRICE_RE})\s*EUR$")
-DISCOUNT_RE = re.compile(rf"^\*\s*(?P<desc>.+?)\s+(?P<iva>\d+%)\s+(?P<amount>{DISCOUNT_AMOUNT_RE})$")
+UNIT_QTY_RE = re.compile(rf"^(?P<qty>\d+)\s*x\s*(?P<unit>{UNIT_PRICE_RE})\s*EUR$")
 
-
-FILENAME_TIMESTAMP_RE = re.compile(
-    r"(?P<date>\d{8})[_-]?(?P<time>\d{6})"
+DISCOUNT_RE = re.compile(
+    rf"^(?:\*\s*)?(?P<desc>Sconto promo|.+?)\s+(?P<iva>\d+%)\s+(?P<amount>{DISCOUNT_AMOUNT_RE})$",
+    re.IGNORECASE,
 )
+
+ADDRESS_RE = re.compile(
+    r"\b(via|viale|corso|piazza|strada|contrada)\b",
+    re.IGNORECASE,
+)
+
+
+
+FILENAME_TIMESTAMP_RE = re.compile(r"(?P<date>\d{8})[_-]?(?P<time>\d{6})")
+
+
+@dataclass(frozen=True)
+class QuantityLine:
+    line_index: int
+    raw_line: str
+    quantity: float
+    unit_price: float
+    unit: str
+
+
+@dataclass(frozen=True)
+class DiscountLine:
+    line_index: int
+    raw_line: str
+    description_raw: str
+    vat_rate: int
+    amount: float
+
+
+@dataclass(frozen=True)
+class ItemLine:
+    line_index: int
+    raw_line: str
+    description_raw: str
+    vat_rate: int
+    price: float
+
+
+@dataclass(frozen=True)
+class ServiceLine:
+    line_index: int
+    raw_line: str
+    description_raw: str
+    price: float
+
+
+@dataclass(frozen=True)
+class TotalLine:
+    line_index: int
+    raw_line: str
+    total: float
+
+
+ParsedLine = QuantityLine | DiscountLine | ItemLine | ServiceLine | TotalLine
+LineParser = Callable[[int, str], ParsedLine | None]
 
 
 def euro_to_float(value: str) -> float:
     return float(value.replace(",", "."))
 
 
+def vat_rate_to_int(value: str) -> int:
+    normalized = value.removesuffix("%").replace(",", ".")
+    return int(float(normalized))
+
+
 def parse_datetime(date_value: str, time_value: str) -> str:
-    parsed = datetime.strptime(
-        f"{date_value} {time_value}",
-        "%d-%m-%Y %H:%M",
-    )
+    parsed = datetime.strptime(f"{date_value} {time_value}", "%d-%m-%Y %H:%M")
     return parsed.isoformat(timespec="seconds")
 
 
@@ -90,24 +144,156 @@ def output_stem_from_input_path(path: Path) -> str:
     return stem
 
 
+def parse_total_line(line_index: int, line: str) -> TotalLine | None:
+    match = TOTAL_RE.match(line)
+
+    if not match:
+        return None
+
+    return TotalLine(
+        line_index=line_index,
+        raw_line=line,
+        total=euro_to_float(match.group("total")),
+    )
+
+
+def parse_unit_quantity_line(line_index: int, line: str) -> QuantityLine | None:
+    match = UNIT_QTY_RE.match(line)
+
+    if not match:
+        return None
+
+    return QuantityLine(
+        line_index=line_index,
+        raw_line=line,
+        quantity=euro_to_float(match.group("qty")),
+        unit_price=euro_to_float(match.group("unit")),
+        unit="unit",
+    )
+
+
+def parse_weight_quantity_line(line_index: int, line: str) -> QuantityLine | None:
+    match = WEIGHT_QTY_RE.match(line)
+
+    if not match:
+        return None
+
+    return QuantityLine(
+        line_index=line_index,
+        raw_line=line,
+        quantity=euro_to_float(match.group("weight")),
+        unit_price=euro_to_float(match.group("unit")),
+        unit="kg",
+    )
+
+
+def parse_discount_line(line_index: int, line: str) -> DiscountLine | None:
+    match = DISCOUNT_RE.match(line)
+
+    if not match:
+        return None
+
+    return DiscountLine(
+        line_index=line_index,
+        raw_line=line,
+        description_raw=match.group("desc"),
+        vat_rate=vat_rate_to_int(match.group("iva")),
+        amount=euro_to_float(match.group("amount")),
+    )
+
+
+def parse_service_line(line_index: int, line: str) -> ServiceLine | None:
+    match = SERVICE_RE.match(line)
+
+    if not match:
+        return None
+
+    return ServiceLine(
+        line_index=line_index,
+        raw_line=line,
+        description_raw=match.group("desc"),
+        price=euro_to_float(match.group("price")),
+    )
+
+
+def parse_item_line(line_index: int, line: str) -> ItemLine | None:
+    match = ITEM_RE.match(line)
+
+    if not match:
+        return None
+
+    return ItemLine(
+        line_index=line_index,
+        raw_line=line,
+        description_raw=match.group("desc"),
+        vat_rate=vat_rate_to_int(match.group("iva")),
+        price=euro_to_float(match.group("price")),
+    )
+
+
+BODY_LINE_PARSERS: list[LineParser] = [
+    parse_total_line,
+    parse_unit_quantity_line,
+    parse_weight_quantity_line,
+    parse_discount_line,
+    parse_service_line,
+    parse_item_line,
+]
+
+
+ITEM_AREA_LINE_PARSERS: list[LineParser] = [
+    parse_unit_quantity_line,
+    parse_weight_quantity_line,
+    parse_discount_line,
+    parse_service_line,
+    parse_item_line,
+]
+
+
+def parse_known_body_line(line_index: int, line: str) -> ParsedLine | None:
+    for parser in BODY_LINE_PARSERS:
+        parsed = parser(line_index, line)
+
+        if parsed is not None:
+            return parsed
+
+    return None
+
+
+def parse_known_item_area_line(line_index: int, line: str) -> ParsedLine | None:
+    for parser in ITEM_AREA_LINE_PARSERS:
+        parsed = parser(line_index, line)
+
+        if parsed is not None:
+            return parsed
+
+    return None
+
+
 def is_items_header(line: str) -> bool:
     upper_line = line.upper()
     return "IVA" in upper_line and "PREZZO" in upper_line
 
 
 def is_probable_receipt_body_line(line: str) -> bool:
+    return is_items_header(line) or parse_known_body_line(-1, line) is not None
+
+def is_summary_line(line: str) -> bool:
+    upper_line = line.upper()
     return (
-        is_items_header(line)
-        or ITEM_RE.match(line) is not None
-        or QTY_RE.match(line) is not None
-        or DISCOUNT_RE.match(line) is not None
-        or TOTAL_RE.match(line) is not None
-        or WEIGHT_QTY_RE.match(line) is not None
-        or SERVICE_RE.match(line) is not None
+        upper_line.startswith("VALORE SCONTI")
+        or upper_line.startswith("SUBTOTALE")
     )
 
 def is_separator_line(line: str) -> bool:
     return bool(re.fullmatch(r"-{5,}", line.strip()))
+
+
+
+
+def is_address_line(line: str) -> bool:
+    return ADDRESS_RE.search(line) is not None
+
 
 def empty_metadata() -> dict:
     return {
@@ -122,9 +308,6 @@ def empty_metadata() -> dict:
         "pagamento": None,
         "iva_totale": None,
     }
-
-
-
 
 
 def source_images_from_input(data: dict, input_path: Path) -> list[dict]:
@@ -172,17 +355,10 @@ def parse_metadata(raw_lines: list[str]) -> tuple[dict, list[str]]:
         if not line:
             continue
 
-        if (
-            metadata["negozio"]["indirizzo"] is None
-            and (
-                line.lower().startswith("via ")
-                or line.lower().startswith("viale ")
-                or line.lower().startswith("corso ")
-                or line.lower().startswith("piazza ")
-            )
-        ):
+        if metadata["negozio"]["indirizzo"] is None and is_address_line(line):
             metadata["negozio"]["indirizzo"] = line
             continue
+        
 
         piva_match = PIVA_RE.match(line)
         if piva_match:
@@ -228,11 +404,6 @@ def parse_metadata(raw_lines: list[str]) -> tuple[dict, list[str]]:
     return metadata, warnings
 
 
-
-def vat_rate_to_int(value: str) -> int:
-    normalized = value.removesuffix("%").replace(",", ".")
-    return int(float(normalized))
-
 def split_receipt_datetime(value: str | None) -> dict:
     if value is None:
         return {
@@ -248,15 +419,96 @@ def split_receipt_datetime(value: str | None) -> dict:
     }
 
 
+def build_item_from_service_line(parsed: ServiceLine) -> dict:
+    return {
+        "line_index": parsed.line_index,
+        "description_raw": parsed.description_raw,
+        "description_norm": None,
+        "category": None,
+        "quantity": 1.0,
+        "unit_price": None,
+        "unit": "service",
+        "gross_amount": parsed.price,
+        "discount_amount": 0.0,
+        "net_amount": parsed.price,
+        "vat_rate": None,
+        "raw_lines": [parsed.raw_line],
+        "warnings": [],
+    }
+
+
+def build_item_from_item_line(
+    parsed: ItemLine,
+    pending_qty: QuantityLine | None,
+) -> dict:
+    item = {
+        "line_index": parsed.line_index,
+        "description_raw": parsed.description_raw,
+        "description_norm": None,
+        "category": None,
+        "quantity": 1.0,
+        "unit_price": None,
+        "gross_amount": parsed.price,
+        "discount_amount": 0.0,
+        "net_amount": parsed.price,
+        "vat_rate": parsed.vat_rate,
+        "raw_lines": [parsed.raw_line],
+        "warnings": [],
+    }
+
+    if pending_qty is None:
+        item["unit"] = "unit"
+        return item
+
+    item["line_index"] = pending_qty.line_index
+    item["quantity"] = pending_qty.quantity
+    item["unit_price"] = pending_qty.unit_price
+    item["unit"] = pending_qty.unit
+    item["raw_lines"] = [pending_qty.raw_line, parsed.raw_line]
+    return item
+
+
+def build_discount_from_discount_line(parsed: DiscountLine) -> dict:
+    return {
+        "line_index": parsed.line_index,
+        "description_raw": parsed.description_raw,
+        "vat_rate": parsed.vat_rate,
+        "amount": parsed.amount,
+        "raw_lines": [parsed.raw_line],
+        "applied_to_line_index": None,
+    }
+
+
+def apply_discount_to_last_matching_item(
+    discount: dict,
+    items: list[dict],
+    warnings: list[str],
+) -> None:
+    if items and items[-1]["vat_rate"] == discount["vat_rate"]:
+        last_item = items[-1]
+
+        last_item["discount_amount"] = round(
+            last_item["discount_amount"] + discount["amount"],
+            2,
+        )
+        last_item["net_amount"] = round(
+            last_item["gross_amount"] + last_item["discount_amount"],
+            2,
+        )
+        last_item["raw_lines"].append(discount["raw_lines"][0])
+
+        discount["applied_to_line_index"] = last_item["line_index"]
+    else:
+        warnings.append("sconto_non_allocato")
+
 
 def parse_raw_lines(
     raw_lines: list[str],
     input_path: Path | None = None,
     source_images: list[dict] | None = None,
 ) -> dict:
-
     if input_path is None:
-       input_path = Path("test_receipt.raw.json")
+        input_path = Path("test_receipt.raw.json")
 
     if source_images is None:
         source_images = [
@@ -266,14 +518,13 @@ def parse_raw_lines(
             }
         ]
 
-        
     metadata, warnings = parse_metadata(raw_lines)
 
     items = []
     discounts = []
     unparsed_lines = []
 
-    pending_qty = None
+    pending_qty: QuantityLine | None = None
     total = None
     in_items_area = False
 
@@ -283,6 +534,9 @@ def parse_raw_lines(
         if not line or is_separator_line(line):
             continue
 
+        if is_summary_line(line):
+            continue
+
         if DOK_INFO_LINE_RE.match(line):
             continue
 
@@ -290,141 +544,41 @@ def parse_raw_lines(
             in_items_area = True
             continue
 
-        total_match = TOTAL_RE.match(line)
-        if total_match:
-            total = euro_to_float(total_match.group("total"))
+        parsed = parse_total_line(line_index, line)
+        if parsed is not None:
+            total = parsed.total
             in_items_area = False
             continue
 
         if not in_items_area:
             continue
 
-        qty_match = QTY_RE.match(line)
-        if qty_match:
-            pending_qty = {
-                "quantity": euro_to_float(qty_match.group("qty")),
-                "unit_price": euro_to_float(qty_match.group("unit")),
-                "raw_line": line,
-                "line_index": line_index,
-            }
+        parsed = parse_known_item_area_line(line_index, line)
+
+        if isinstance(parsed, QuantityLine):
+            pending_qty = parsed
             continue
 
-
-
-        weight_qty_match = WEIGHT_QTY_RE.match(line)
-        if weight_qty_match:
-            pending_qty = {
-                "quantity": euro_to_float(weight_qty_match.group("weight")),
-                "unit_price": euro_to_float(weight_qty_match.group("unit")),
-                "unit": "kg",
-                "raw_line": line,
-                "line_index": line_index,
-            }
-            continue
-
-
-
-
-
-
-        
-
-        discount_match = DISCOUNT_RE.match(line)
-        if discount_match:
-            discount = {
-                "line_index": line_index,
-                "description_raw": discount_match.group("desc"),
-                "vat_rate": vat_rate_to_int(discount_match.group("iva")),
-                "amount": euro_to_float(discount_match.group("amount")),
-                "raw_lines": [line],
-                "applied_to_line_index": None,
-            }
-
-            if items and items[-1]["vat_rate"] == discount["vat_rate"]:
-                last_item = items[-1]
-
-                last_item["discount_amount"] = round(
-                    last_item["discount_amount"] + discount["amount"],
-                    2,
-                )
-                last_item["net_amount"] = round(
-                    last_item["gross_amount"] + last_item["discount_amount"],
-                    2,
-                )
-                last_item["raw_lines"].append(line)
-
-                discount["applied_to_line_index"] = last_item["line_index"]
-            else:
-                warnings.append("sconto_non_allocato")
-
+        if isinstance(parsed, DiscountLine):
+            discount = build_discount_from_discount_line(parsed)
+            apply_discount_to_last_matching_item(discount, items, warnings)
             discounts.append(discount)
             continue
 
-
-
-        service_match = SERVICE_RE.match(line)
-        if service_match:
-            price = euro_to_float(service_match.group("price"))
-
-            items.append(
-                {
-                    "line_index": line_index,
-                    "description_raw": service_match.group("desc"),
-                    "description_norm": None,
-                    "category": None,
-                    "quantity": 1.0,
-                    "unit_price": None,
-                    "unit": "service",
-                    "gross_amount": price,
-                    "discount_amount": 0.0,
-                    "net_amount": price,
-                    "vat_rate": None,
-                    "raw_lines": [line],
-                    "warnings": [],
-                }
-            )
+        if isinstance(parsed, ServiceLine):
+            items.append(build_item_from_service_line(parsed))
             continue
 
-
-        
-
-        item_match = ITEM_RE.match(line)
-        if item_match:
-            price = euro_to_float(item_match.group("price"))
-
-            item = {
-                "line_index": line_index,
-                "description_raw": item_match.group("desc"),
-                "description_norm": None,
-                "category": None,
-                "quantity": 1.0,
-                "unit_price": None,
-                "gross_amount": price,
-                "discount_amount": 0.0,
-                "net_amount": price,
-                "vat_rate": vat_rate_to_int(item_match.group("iva")),
-                "raw_lines": [line],
-                "warnings": [],
-            }
-
-            if pending_qty:
-                item["line_index"] = pending_qty["line_index"]
-                item["quantity"] = pending_qty["quantity"]
-                item["unit_price"] = pending_qty["unit_price"]
-                item["unit"] = pending_qty.get("unit", "unit")
-                item["raw_lines"] = [pending_qty["raw_line"], line]
-                pending_qty = None
-            else:
-                item["unit"] = "unit"
-                
-            items.append(item)
+        if isinstance(parsed, ItemLine):
+            items.append(build_item_from_item_line(parsed, pending_qty))
+            pending_qty = None
             continue
 
         unparsed_lines.append(line)
 
     if pending_qty is not None:
         warnings.append("quantita_senza_articolo_successivo")
-        unparsed_lines.append(pending_qty["raw_line"])
+        unparsed_lines.append(pending_qty.raw_line)
 
     gross_items_total = sum(item["gross_amount"] for item in items)
     discounts_total = sum(discount["amount"] for discount in discounts)
@@ -441,7 +595,6 @@ def parse_raw_lines(
     if any(discount["applied_to_line_index"] is None for discount in discounts):
         warnings.append("sconti_non_ancora_allocati_agli_articoli")
 
-        
     return {
         "receipt_id": receipt_id_from_input_path(input_path),
         "source_images": source_images,
