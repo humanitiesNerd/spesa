@@ -12,7 +12,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 ITEMS_CSV = PROJECT_ROOT / "exports" / "items.csv"
 MAPPING_CSV = PROJECT_ROOT / "data" / "product_mapping.csv"
 OUTPUT_CSV = PROJECT_ROOT / "exports" / "items_enriched.csv"
-
+QUANTITY_OVERRIDES_CSV = PROJECT_ROOT / "data" / "item_quantity_overrides.csv"
 
 REQUIRED_MAPPING_COLUMNS = {
     "pattern",
@@ -46,19 +46,26 @@ def load_mapping() -> pd.DataFrame:
 
 
 def apply_mapping(items: pd.DataFrame, mapping: pd.DataFrame) -> pd.DataFrame:
-    mapping_for_merge = mapping[
-        [
-            "pattern",
-            "description_norm",
-            "category",
-            "function",
-        ]
-    ].rename(
+    mapping_columns = [
+        "pattern",
+        "description_norm",
+        "category",
+        "function",
+    ]
+
+    for optional_column in OPTIONAL_MAPPING_COLUMNS:
+        if optional_column in mapping.columns:
+            mapping_columns.append(optional_column)
+
+    mapping_for_merge = mapping[mapping_columns].rename(
         columns={
             "pattern": "description_raw",
             "description_norm": "mapped_description_norm",
             "category": "mapped_category",
             "function": "mapped_function",
+            "reference_quantity": "mapped_reference_quantity",
+            "reference_unit": "mapped_reference_unit",
+            "normalized_automatically": "mapped_normalized_automatically",
         }
     )
 
@@ -78,15 +85,107 @@ def apply_mapping(items: pd.DataFrame, mapping: pd.DataFrame) -> pd.DataFrame:
 
     enriched["function"] = enriched["mapped_function"]
 
-    enriched = enriched.drop(
-        columns=[
+    if "mapped_reference_quantity" in enriched.columns:
+        enriched["reference_quantity"] = enriched["mapped_reference_quantity"]
+
+    if "mapped_reference_unit" in enriched.columns:
+        enriched["reference_unit"] = enriched["mapped_reference_unit"]
+
+    if "mapped_normalized_automatically" in enriched.columns:
+        enriched["normalized_automatically"] = enriched[
+            "mapped_normalized_automatically"
+        ]
+
+    columns_to_drop = [
+        column
+        for column in [
             "mapped_description_norm",
             "mapped_category",
             "mapped_function",
+            "mapped_reference_quantity",
+            "mapped_reference_unit",
+            "mapped_normalized_automatically",
+        ]
+        if column in enriched.columns
+    ]
+
+    enriched = enriched.drop(columns=columns_to_drop)
+
+    return enriched
+
+
+def apply_quantity_overrides(items: pd.DataFrame) -> pd.DataFrame:
+    if not QUANTITY_OVERRIDES_CSV.exists():
+        return items
+
+    overrides = pd.read_csv(QUANTITY_OVERRIDES_CSV)
+
+    required_columns = {
+        "receipt_id",
+        "line_index",
+        "reference_quantity",
+        "reference_unit",
+        "status",
+    }
+
+    missing = required_columns - set(overrides.columns)
+    if missing:
+        raise ValueError(
+            f"Mancano colonne in {QUANTITY_OVERRIDES_CSV}: {sorted(missing)}"
+        )
+
+    valid_overrides = overrides[
+        overrides["status"].astype(str).str.strip().eq("ok")
+    ].copy()
+
+    if valid_overrides.empty:
+        return items
+
+    valid_overrides = valid_overrides[
+        [
+            "receipt_id",
+            "line_index",
+            "reference_quantity",
+            "reference_unit",
+        ]
+    ].copy()
+
+    valid_overrides = valid_overrides.rename(
+        columns={
+            "reference_quantity": "override_reference_quantity",
+            "reference_unit": "override_reference_unit",
+        }
+    )
+
+    merged = items.merge(
+        valid_overrides,
+        on=["receipt_id", "line_index"],
+        how="left",
+    )
+
+    has_override = (
+        merged["override_reference_quantity"].notna()
+        & merged["override_reference_unit"].notna()
+    )
+
+    merged.loc[has_override, "reference_quantity"] = merged.loc[
+        has_override, "override_reference_quantity"
+    ]
+
+    merged.loc[has_override, "reference_unit"] = merged.loc[
+        has_override, "override_reference_unit"
+    ]
+
+    merged = merged.drop(
+        columns=[
+            "override_reference_quantity",
+            "override_reference_unit",
         ]
     )
 
-    return enriched
+    print(f"Applicati override quantità: {has_override.sum()}")
+
+    return merged
 
 
 def build_missing_mapping_rows(
@@ -222,6 +321,8 @@ def main() -> None:
     mapping = update_mapping_with_missing_items(items, mapping)
 
     enriched = apply_mapping(items, mapping)
+
+    enriched = apply_quantity_overrides(enriched)
 
     enriched["description_norm"] = enriched["description_norm"].fillna(
         enriched["description_raw"]

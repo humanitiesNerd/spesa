@@ -10,51 +10,27 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 ITEMS_CSV = PROJECT_ROOT / "exports" / "items_enriched.csv"
-MAPPING_CSV = PROJECT_ROOT / "data" / "product_mapping.csv"
 
 
 def main() -> None:
-    items = pd.read_csv(ITEMS_CSV)
-    mapping = pd.read_csv(MAPPING_CSV)
+    df = pd.read_csv(ITEMS_CSV)
 
-    required_item_columns = {
+    required_columns = {
         "description_norm",
         "description_raw",
         "store_brand",
         "quantity",
         "net_amount",
-    }
-
-    required_mapping_columns = {
-        "pattern",
-        "description_norm",
         "reference_quantity",
         "reference_unit",
     }
 
-    missing_items = required_item_columns - set(items.columns)
-    if missing_items:
-        raise ValueError(f"Mancano colonne in {ITEMS_CSV}: {sorted(missing_items)}")
-
-    missing_mapping = required_mapping_columns - set(mapping.columns)
-    if missing_mapping:
-        raise ValueError(f"Mancano colonne in {MAPPING_CSV}: {sorted(missing_mapping)}")
-
-    mapping = mapping[
-        [
-            "pattern",
-            "description_norm",
-            "reference_quantity",
-            "reference_unit",
-        ]
-    ].copy()
-
-    df = items.merge(
-        mapping,
-        left_on=["description_raw", "description_norm"],
-        right_on=["pattern", "description_norm"],
-        how="left",
-    )
+    missing = required_columns - set(df.columns)
+    if missing:
+        raise ValueError(
+            f"Mancano colonne in {ITEMS_CSV}: {sorted(missing)}\n"
+            f"Colonne presenti: {list(df.columns)}"
+        )
 
     df = df.dropna(subset=["description_norm", "store_brand"]).copy()
 
