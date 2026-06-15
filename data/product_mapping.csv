@@ -75,7 +75,7 @@ C- POMODORINI SF,pomodoro_insalata,pomodori_insalata,contorno_fresco,,g,no
 PROSC. CRUDO,Prosciutto Crudo Scarto,prosciutto_crudo,proteine_pronte,,g,no
 "RICOTTA DI MUCCA""DEL",Ricotta vaccina,caseari,proteine_pronte,,g,no
 RUCOLA PQC,rucola_in_busta,insalata_fresca,contorno_fresco,,,no
-STEVIA BARATTOLO CND,stevia,dolcificante,colazione_base,,,no
+STEVIA BARATTOLO CND,stevia,dolcificante,colazione_base,150,g,no
 NETTARE S/ZUCCHERI A,succo_di_frutta_zero,bibite_zero,contenimento,,ml,no
 *SUCCO ACE S/ZUCCHERI,succo_di_frutta_zero,bibite_zero,contenimento,,ml,no
 C- ZUCCHINE SCURE PAD.,zucchine,ortaggi,vegetali_da_cucinare,,g,no
@@ -85,12 +85,12 @@ ORAL-B FILO INTERDEN,filo_interdentale,igiene_personale,igiene_personale,1.0,,to
 PENNE ZITI RIG.INTEG,pasta,pasta,base_cucina,500.0,g,todo
 BEV S/Z MELA/LIM/ZEN,succo_di_frutta_zero,bibite_zero,contenimento,1000.0,ml,todo
 SUCCO SANTAL S/ZUCCH,succo_di_frutta_zero,bibite_zero,contenimento,1000.0,ml,todo
-BIBITA GASSATA,,,,1.0,,todo
-POLPA DI POM.GR230X3,,,,1.0,,todo
-*C- BANANE DOLE CT.SF.,,,,633,,todo
-C- PEPERONI GIALLI,,,,494,,todo
-*C- MELONE RETATO PL.SF.,,,,1.95,,todo
-MOZZARELLA LIGHT,,,,1.0,,todo
+BIBITA GASSATA,bibita_gassata_zero,bibite_zero,contenimento,,,todo
+POLPA DI POM.GR230X3,polpa_pomodoro,passata_pomodoro,base_cucina,690,g,todo
+*C- BANANE DOLE CT.SF.,banane,frutta,colazione_e_altro,633,g,todo
+C- PEPERONI GIALLI,peperoni,ortaggi,vegetali_da_cucinare,494,g,todo
+*C- MELONE RETATO PL.SF.,melone_giallo,frutta,colazione_e_altro,1950,g,todo
+MOZZARELLA LIGHT,mozzarella_light,caseari,proteine_pronte,1.0,,todo
 YOMO DELTA YOG.GREC.,iogurt_greco,caseari,proteine_pronte,1000.0,g,todo
-LATTIC.SPALM.LIGHT,,,,,g,todo
+LATTIC.SPALM.LIGHT,formaggio_spalmabile,caseari,proteine_pronte,200.0,g,todo
 FRUTTI BOSCO SURGEL.,,,,1.0,,todo
