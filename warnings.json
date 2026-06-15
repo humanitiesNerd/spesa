@@ -1,0 +1,1071 @@
+{
+  "receipt_id": "20260516_044734",
+  "source_images": [
+    {
+      "filename": "20260516_044734.json",
+      "timestamp": "2026-05-16T04:47:34"
+    }
+  ],
+  "store": {
+    "brand": null,
+    "name": null,
+    "address": null,
+    "vat_number": null
+  },
+  "datetime": {
+    "date": "2026-05-14",
+    "time": "12:00"
+  },
+  "document": {
+    "number": "2502-0098"
+  },
+  "payment": {
+    "metodo": "elettronico",
+    "importo": 12.62
+  },
+  "items": [
+    {
+      "line_index": 1,
+      "description_raw": "GRAN MIX BS.GR.125 P",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 1.49,
+      "discount_amount": 0.0,
+      "net_amount": 1.49,
+      "vat_rate": 4,
+      "raw_lines": [
+        "GRAN MIX BS.GR.125 P        4%   1,49"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 2,
+      "description_raw": "VERMICELLI DIVELLA",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 0.65,
+      "discount_amount": 0.0,
+      "net_amount": 0.65,
+      "vat_rate": 4,
+      "raw_lines": [
+        "VERMICELLI DIVELLA          4%   0,65"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 3,
+      "description_raw": "RUCOLA PQC",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 0.99,
+      "discount_amount": 0.0,
+      "net_amount": 0.99,
+      "vat_rate": 4,
+      "raw_lines": [
+        "RUCOLA PQC                  4%   0,99"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 4,
+      "description_raw": "CONAD PISELLI 750GR",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 2.59,
+      "discount_amount": 0.0,
+      "net_amount": 2.59,
+      "vat_rate": 4,
+      "raw_lines": [
+        "CONAD PISELLI 750GR         4%   2,59"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 5,
+      "description_raw": "*CIP.DORATA RETE GR.7",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 0.99,
+      "discount_amount": 0.0,
+      "net_amount": 0.99,
+      "vat_rate": 4,
+      "raw_lines": [
+        "*CIP.DORATA RETE GR.7       4%   0,99"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 6,
+      "description_raw": "PASSATA POMODORO PUG",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 1.28,
+      "discount_amount": 0.0,
+      "net_amount": 1.28,
+      "vat_rate": 4,
+      "raw_lines": [
+        "PASSATA POMODORO PUG        4%   1,28"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 7,
+      "description_raw": "POM.TONDO CAMONE S&D",
+      "description_norm": null,
+      "category": null,
+      "quantity": 2.0,
+      "unit_price": 1.99,
+      "gross_amount": 3.98,
+      "discount_amount": -1.0,
+      "net_amount": 2.98,
+      "vat_rate": 4,
+      "raw_lines": [
+        "2 x 1,990 EUR",
+        "POM.TONDO CAMONE S&D        4%   3,98",
+        "* SCONTO PERCENTUALE         4%  -1,00"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 10,
+      "description_raw": "SALSA DATTERINI MUTT",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 1.65,
+      "discount_amount": 0.0,
+      "net_amount": 1.65,
+      "vat_rate": 10,
+      "raw_lines": [
+        "SALSA DATTERINI MUTT       10%   1,65"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    }
+  ],
+  "discounts": [
+    {
+      "line_index": 9,
+      "description_raw": "SCONTO PERCENTUALE",
+      "vat_rate": 4,
+      "amount": -1.0,
+      "raw_lines": [
+        "* SCONTO PERCENTUALE         4%  -1,00"
+      ],
+      "applied_to_line_index": 7
+    }
+  ],
+  "totals": {
+    "total_amount": 12.62,
+    "vat_amount": 0.57,
+    "gross_items_total": 13.62,
+    "discounts_total": -1.0,
+    "calculated_total": 12.62
+  },
+  "validation": {
+    "match_total": true
+  },
+  "warnings": [
+    "intestazione_negozio_mancante",
+    "punto_vendita_non_identificato"
+  ],
+  "unparsed_lines": []
+}
+{
+  "receipt_id": "20260601_121001",
+  "source_images": [
+    {
+      "filename": "20260601_121001.json",
+      "timestamp": "2026-06-01T12:10:01"
+    }
+  ],
+  "store": {
+    "brand": "Conad Taranto",
+    "name": "DI PALMA S.R.L.",
+    "address": "Via di Palma, 84 - Taranto",
+    "vat_number": "03066810734"
+  },
+  "datetime": {
+    "date": null,
+    "time": null
+  },
+  "document": {
+    "number": null
+  },
+  "payment": null,
+  "items": [
+    {
+      "line_index": 8,
+      "description_raw": "ARANCIATA ZERO CONAD",
+      "description_norm": null,
+      "category": null,
+      "quantity": 2.0,
+      "unit_price": 0.79,
+      "gross_amount": 1.58,
+      "discount_amount": 0.0,
+      "net_amount": 1.58,
+      "vat_rate": 22,
+      "raw_lines": [
+        "2 x 0,79 EUR",
+        "ARANCIATA ZERO CONAD         22%  1,58"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 10,
+      "description_raw": "CONSEGNA DOMICILIO",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "unit": "service",
+      "gross_amount": 3.0,
+      "discount_amount": 0.0,
+      "net_amount": 3.0,
+      "vat_rate": null,
+      "raw_lines": [
+        "CONSEGNA DOMICILIO            NS*  3,00"
+      ],
+      "warnings": []
+    },
+    {
+      "line_index": 11,
+      "description_raw": "LATTUGA ROMANA G.300",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 1.1,
+      "discount_amount": 0.0,
+      "net_amount": 1.1,
+      "vat_rate": 4,
+      "raw_lines": [
+        "LATTUGA ROMANA G.300          4%   1,10"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 12,
+      "description_raw": "RUCOLA PQC",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 0.99,
+      "discount_amount": 0.0,
+      "net_amount": 0.99,
+      "vat_rate": 4,
+      "raw_lines": [
+        "RUCOLA PQC                   4%   0,99"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 13,
+      "description_raw": "C- CETRIOLO CAROSELLO N",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.372,
+      "unit_price": 1.99,
+      "gross_amount": 2.73,
+      "discount_amount": 0.0,
+      "net_amount": 2.73,
+      "vat_rate": 4,
+      "raw_lines": [
+        "1,372 kg x 1,990 EUR/kg",
+        "C- CETRIOLO CAROSELLO N       4%   2,73"
+      ],
+      "warnings": [],
+      "unit": "kg"
+    },
+    {
+      "line_index": 15,
+      "description_raw": "COCA COLA ZERO CAFFE",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 2.05,
+      "discount_amount": 0.0,
+      "net_amount": 2.05,
+      "vat_rate": 22,
+      "raw_lines": [
+        "COCA COLA ZERO CAFFE         22%  2,05"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 16,
+      "description_raw": "SALSA CILIEGINI MUTT",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 1.65,
+      "discount_amount": 0.0,
+      "net_amount": 1.65,
+      "vat_rate": 10,
+      "raw_lines": [
+        "SALSA CILIEGINI MUTT         10%  1,65"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 17,
+      "description_raw": "SALSA CLASSICA MUTTI",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 1.65,
+      "discount_amount": 0.0,
+      "net_amount": 1.65,
+      "vat_rate": 10,
+      "raw_lines": [
+        "SALSA CLASSICA MUTTI          10%  1,65"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 18,
+      "description_raw": "FIOC.LATTE 200 PIACE",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 1.32,
+      "discount_amount": 0.0,
+      "net_amount": 1.32,
+      "vat_rate": 4,
+      "raw_lines": [
+        "FIOC.LATTE 200 PIACE          4%   1,32"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 19,
+      "description_raw": "ORAL-B FILO INTERDEN",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 3.99,
+      "discount_amount": 0.0,
+      "net_amount": 3.99,
+      "vat_rate": 22,
+      "raw_lines": [
+        "ORAL-B FILO INTERDEN          22%  3,99"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 20,
+      "description_raw": "PROSC. CRUDO",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 3.04,
+      "discount_amount": 0.0,
+      "net_amount": 3.04,
+      "vat_rate": 10,
+      "raw_lines": [
+        "PROSC. CRUDO                 10%   3,04"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 21,
+      "description_raw": "PROSC. CRUDO",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 1.76,
+      "discount_amount": 0.0,
+      "net_amount": 1.76,
+      "vat_rate": 10,
+      "raw_lines": [
+        "PROSC. CRUDO                 10%   1,76"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 22,
+      "description_raw": "RICOTTA DI MUCCA\"DEL",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 4.67,
+      "discount_amount": 0.0,
+      "net_amount": 4.67,
+      "vat_rate": 4,
+      "raw_lines": [
+        "RICOTTA DI MUCCA\"DEL         4%   4,67"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 23,
+      "description_raw": "YOG.GR.0% BIA.1 PIAC",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 5.69,
+      "discount_amount": 0.0,
+      "net_amount": 5.69,
+      "vat_rate": 10,
+      "raw_lines": [
+        "YOG.GR.0% BIA.1 PIAC          10%  5,69"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 24,
+      "description_raw": "*C- BANANE CHIQUIITA",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.157,
+      "unit_price": 1.59,
+      "gross_amount": 1.84,
+      "discount_amount": 0.0,
+      "net_amount": 1.84,
+      "vat_rate": 4,
+      "raw_lines": [
+        "1,157 kg x 1,59 EUR/kg",
+        "*C- BANANE CHIQUIITA          4%   1,84"
+      ],
+      "warnings": [],
+      "unit": "kg"
+    },
+    {
+      "line_index": 26,
+      "description_raw": "C- POMODORINI SF",
+      "description_norm": null,
+      "category": null,
+      "quantity": 0.685,
+      "unit_price": 2.89,
+      "gross_amount": 1.98,
+      "discount_amount": 0.0,
+      "net_amount": 1.98,
+      "vat_rate": 4,
+      "raw_lines": [
+        "0,685 kg x 2,89 EUR/kg",
+        "C- POMODORINI SF             4%   1,98"
+      ],
+      "warnings": [],
+      "unit": "kg"
+    },
+    {
+      "line_index": 28,
+      "description_raw": "SACCH.BIOD.CONAD S/M",
+      "description_norm": null,
+      "category": null,
+      "quantity": 2.0,
+      "unit_price": 0.02,
+      "gross_amount": 0.04,
+      "discount_amount": 0.0,
+      "net_amount": 0.04,
+      "vat_rate": 22,
+      "raw_lines": [
+        "2 x 0,02 EUR",
+        "SACCH.BIOD.CONAD S/M         22%  0,04"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    }
+  ],
+  "discounts": [],
+  "totals": {
+    "total_amount": null,
+    "vat_amount": null,
+    "gross_items_total": 39.08,
+    "discounts_total": 0,
+    "calculated_total": 39.08
+  },
+  "validation": {
+    "match_total": false
+  },
+  "warnings": [
+    "totale_mancante"
+  ],
+  "unparsed_lines": []
+}
+{
+  "receipt_id": "20260601_121006",
+  "source_images": [
+    {
+      "filename": "20260601_121006.json",
+      "timestamp": "2026-06-01T12:10:06"
+    }
+  ],
+  "store": {
+    "brand": null,
+    "name": null,
+    "address": null,
+    "vat_number": null
+  },
+  "datetime": {
+    "date": "2026-06-01",
+    "time": "11:52"
+  },
+  "document": {
+    "number": "2521-0217"
+  },
+  "payment": {
+    "metodo": "elettronico",
+    "importo": 39.53
+  },
+  "items": [
+    {
+      "line_index": 1,
+      "description_raw": "ARANCIATA ZERO CONAD",
+      "description_norm": null,
+      "category": null,
+      "quantity": 2.0,
+      "unit_price": 0.79,
+      "gross_amount": 1.58,
+      "discount_amount": 0.0,
+      "net_amount": 1.58,
+      "vat_rate": 22,
+      "raw_lines": [
+        "2 x 0,79 EUR",
+        "ARANCIATA ZERO CONAD                              22%      1,58"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 3,
+      "description_raw": "CONSEGNA DOMICILIO",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "unit": "service",
+      "gross_amount": 3.0,
+      "discount_amount": 0.0,
+      "net_amount": 3.0,
+      "vat_rate": null,
+      "raw_lines": [
+        "CONSEGNA DOMICILIO                               NS*       3,00"
+      ],
+      "warnings": []
+    },
+    {
+      "line_index": 4,
+      "description_raw": "LATTUGA ROMANA G.300",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 1.1,
+      "discount_amount": 0.0,
+      "net_amount": 1.1,
+      "vat_rate": 4,
+      "raw_lines": [
+        "LATTUGA ROMANA G.300                             4%       1,10"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 5,
+      "description_raw": "COCACOLA PCQ",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 0.99,
+      "discount_amount": 0.0,
+      "net_amount": 0.99,
+      "vat_rate": 4,
+      "raw_lines": [
+        "COCACOLA PCQ                                     4%       0,99"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 6,
+      "description_raw": "CETRIOLO CAROSELLO N",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.372,
+      "unit_price": 1.99,
+      "gross_amount": 2.73,
+      "discount_amount": 0.0,
+      "net_amount": 2.73,
+      "vat_rate": 4,
+      "raw_lines": [
+        "1,372 kg x 1,990 EUR/kg",
+        "CETRIOLO CAROSELLO N                             4%      2,73"
+      ],
+      "warnings": [],
+      "unit": "kg"
+    },
+    {
+      "line_index": 8,
+      "description_raw": "COCA COLA ZERO CAFFE",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 2.05,
+      "discount_amount": 0.0,
+      "net_amount": 2.05,
+      "vat_rate": 22,
+      "raw_lines": [
+        "COCA COLA ZERO CAFFE                             22%      2,05"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 9,
+      "description_raw": "SALSA CILIEGINI MUTT",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 1.65,
+      "discount_amount": 0.0,
+      "net_amount": 1.65,
+      "vat_rate": 10,
+      "raw_lines": [
+        "SALSA CILIEGINI MUTT                            10%      1,65"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 10,
+      "description_raw": "SALSA CLASSICA MUTTI",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 1.65,
+      "discount_amount": 0.0,
+      "net_amount": 1.65,
+      "vat_rate": 10,
+      "raw_lines": [
+        "SALSA CLASSICA MUTTI                            10%       1,65"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 11,
+      "description_raw": "FIOC.LATTE 200 PIACE",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 1.32,
+      "discount_amount": 0.0,
+      "net_amount": 1.32,
+      "vat_rate": 4,
+      "raw_lines": [
+        "FIOC.LATTE 200 PIACE                            4%        1,32"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 12,
+      "description_raw": "ORAL-B FILO INTERDEN",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 3.99,
+      "discount_amount": 0.0,
+      "net_amount": 3.99,
+      "vat_rate": 22,
+      "raw_lines": [
+        "ORAL-B FILO INTERDEN                            22%      3,99"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 13,
+      "description_raw": "PROSC. CRUDO",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 3.04,
+      "discount_amount": 0.0,
+      "net_amount": 3.04,
+      "vat_rate": 10,
+      "raw_lines": [
+        "PROSC. CRUDO                                   10%      3,04"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 14,
+      "description_raw": "PROSC. CRUDO",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 1.76,
+      "discount_amount": 0.0,
+      "net_amount": 1.76,
+      "vat_rate": 10,
+      "raw_lines": [
+        "PROSC. CRUDO                                   10%       1,76"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 15,
+      "description_raw": "RICOTTA DI MUCCA\"DEL",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 4.67,
+      "discount_amount": 0.0,
+      "net_amount": 4.67,
+      "vat_rate": 4,
+      "raw_lines": [
+        "RICOTTA DI MUCCA\"DEL                          4%      4,67"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 16,
+      "description_raw": "YOG.GR.0% BIA.1 PIAC",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.0,
+      "unit_price": null,
+      "gross_amount": 5.69,
+      "discount_amount": 0.0,
+      "net_amount": 5.69,
+      "vat_rate": 10,
+      "raw_lines": [
+        "YOG.GR.0% BIA.1 PIAC                           10%      5,69"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 17,
+      "description_raw": "*C- BANANE CHIQUITA",
+      "description_norm": null,
+      "category": null,
+      "quantity": 1.157,
+      "unit_price": 1.59,
+      "gross_amount": 1.84,
+      "discount_amount": 0.0,
+      "net_amount": 1.84,
+      "vat_rate": 4,
+      "raw_lines": [
+        "1,157 kg x 1,59 EUR/kg",
+        "*C- BANANE CHIQUITA                             4%       1,84"
+      ],
+      "warnings": [],
+      "unit": "kg"
+    },
+    {
+      "line_index": 19,
+      "description_raw": "C- POMODORINI SF",
+      "description_norm": null,
+      "category": null,
+      "quantity": 0.685,
+      "unit_price": 2.89,
+      "gross_amount": 1.98,
+      "discount_amount": 0.0,
+      "net_amount": 1.98,
+      "vat_rate": 4,
+      "raw_lines": [
+        "0,685 kg x 2,89 EUR/kg",
+        "C- POMODORINI SF                                4%      1,98"
+      ],
+      "warnings": [],
+      "unit": "kg"
+    },
+    {
+      "line_index": 21,
+      "description_raw": "SACCH.BIOD.CONAD S/M",
+      "description_norm": null,
+      "category": null,
+      "quantity": 2.0,
+      "unit_price": 0.02,
+      "gross_amount": 0.04,
+      "discount_amount": 0.0,
+      "net_amount": 0.04,
+      "vat_rate": 22,
+      "raw_lines": [
+        "2 x 0,02 EUR",
+        "SACCH.BIOD.CONAD S/M                            22%     0,04"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    },
+    {
+      "line_index": 23,
+      "description_raw": "SHOPPERS",
+      "description_norm": null,
+      "category": null,
+      "quantity": 3.0,
+      "unit_price": 0.15,
+      "gross_amount": 0.45,
+      "discount_amount": 0.0,
+      "net_amount": 0.45,
+      "vat_rate": 22,
+      "raw_lines": [
+        "3 x 0,150 EUR",
+        "SHOPPERS                                        22%      0,45"
+      ],
+      "warnings": [],
+      "unit": "unit"
+    }
+  ],
+  "discounts": [],
+  "totals": {
+    "total_amount": 39.53,
+    "vat_amount": 3.27,
+    "gross_items_total": 39.53,
+    "discounts_total": 0,
+    "calculated_total": 39.53
+  },
+  "validation": {
+    "match_total": true
+  },
+  "warnings": [
+    "intestazione_negozio_mancante",
+    "punto_vendita_non_identificato"
+  ],
+  "unparsed_lines": []
+}
+{
+  "receipt_id": "20260603_073633",
+  "source_images": [
+    {
+      "filename": "20260603_073633.json",
+      "timestamp": "2026-06-03T07:36:33"
+    }
+  ],
+  "store": {
+    "brand": "PESCHERIA DA MARIO",
+    "name": "BARLETTA MARIO",
+    "address": "VIA DI PALMA N.24",
+    "vat_number": null
+  },
+  "datetime": {
+    "date": null,
+    "time": null
+  },
+  "document": {
+    "number": null
+  },
+  "payment": null,
+  "items": [],
+  "discounts": [],
+  "totals": {
+    "total_amount": null,
+    "vat_amount": null,
+    "gross_items_total": 0,
+    "discounts_total": 0,
+    "calculated_total": 0
+  },
+  "validation": {
+    "match_total": false
+  },
+  "warnings": [
+    "punto_vendita_non_identificato",
+    "totale_mancante"
+  ],
+  "unparsed_lines": [
+    "DESCRIZIONE",
+    "VARIE",
+    "BUSTA MED.",
+    "4,90 B",
+    "0,10 A",
+    "TOTALE COMPLESSIVO",
+    "5,00",
+    "DI CUI IVA",
+    "0,47",
+    "PAGAMENTO ELETTRONICO",
+    "IMPORTO PAGATO",
+    "5,00",
+    "A: IVA 22,00%",
+    "B: IVA 10,00%",
+    "02/06/26 12:18 DOC. 0024-0012",
+    "RT 1BEN1113729"
+  ]
+}
+{
+  "receipt_id": "20260607_154308",
+  "source_images": [
+    {
+      "filename": "20260607_154308.json",
+      "timestamp": "2026-06-07T15:43:08"
+    }
+  ],
+  "store": {
+    "brand": "Eurospin",
+    "name": "P.V.: via Lago di Pergusa",
+    "address": null,
+    "vat_number": null
+  },
+  "datetime": {
+    "date": null,
+    "time": null
+  },
+  "document": {
+    "number": "02783-00248"
+  },
+  "payment": {
+    "metodo": "elettronico",
+    "importo": 4.57
+  },
+  "items": [],
+  "discounts": [],
+  "totals": {
+    "total_amount": null,
+    "vat_amount": null,
+    "gross_items_total": 0,
+    "discounts_total": 0,
+    "calculated_total": 0
+  },
+  "validation": {
+    "match_total": false
+  },
+  "warnings": [
+    "punto_vendita_non_identificato",
+    "totale_mancante"
+  ],
+  "unparsed_lines": []
+}
+{
+  "receipt_id": "20260607_154541",
+  "source_images": [
+    {
+      "filename": "20260607_154541.json",
+      "timestamp": "2026-06-07T15:45:41"
+    }
+  ],
+  "store": {
+    "brand": "SUPERMERCATI",
+    "name": "PASCAE",
+    "address": "VIALE JONIO, 378 - SAN VITO (TA)",
+    "vat_number": null
+  },
+  "datetime": {
+    "date": null,
+    "time": null
+  },
+  "document": {
+    "number": null
+  },
+  "payment": null,
+  "items": [],
+  "discounts": [],
+  "totals": {
+    "total_amount": 2.4,
+    "vat_amount": null,
+    "gross_items_total": 0,
+    "discounts_total": 0,
+    "calculated_total": 0
+  },
+  "validation": {
+    "match_total": false
+  },
+  "warnings": [
+    "punto_vendita_non_identificato",
+    "totale_non_validato"
+  ],
+  "unparsed_lines": [
+    "RITAGLI SALUMI CRUDI V 1,17 B",
+    "RITAGLI SALUMI CRUDI V 1,23 B",
+    "SUBTOTALE 2,40",
+    "Transazione: 15941",
+    "TOT. PEZZI: 2",
+    "Cassa : 025",
+    "Operatore : OPERATORE1"
+  ]
+}
+{
+  "receipt_id": "20260608_120653",
+  "source_images": [
+    {
+      "filename": "20260608_120653.json",
+      "timestamp": "2026-06-08T12:06:53"
+    }
+  ],
+  "store": {
+    "brand": "19,00",
+    "name": "CONTANTE",
+    "address": "VIA CRISPI,83/A",
+    "vat_number": null
+  },
+  "datetime": {
+    "date": "2026-06-08",
+    "time": "11:55"
+  },
+  "document": {
+    "number": null
+  },
+  "payment": null,
+  "items": [],
+  "discounts": [],
+  "totals": {
+    "total_amount": 8.0,
+    "vat_amount": null,
+    "gross_items_total": 0,
+    "discounts_total": 0,
+    "calculated_total": 0
+  },
+  "validation": {
+    "match_total": false
+  },
+  "warnings": [
+    "punto_vendita_non_identificato",
+    "totale_non_validato"
+  ],
+  "unparsed_lines": []
+}

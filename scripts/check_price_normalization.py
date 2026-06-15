@@ -17,6 +17,13 @@ def has_value(value: object) -> bool:
     return pd.notna(value) and str(value).strip() != ""
 
 
+def product_has_reference(mapping_group: pd.DataFrame) -> bool:
+    return (
+        mapping_group["reference_quantity"].apply(has_value)
+        & mapping_group["reference_unit"].apply(has_value)
+    ).any()
+
+
 def main() -> None:
     items = pd.read_csv(ITEMS_CSV)
     mapping = pd.read_csv(MAPPING_CSV)
@@ -59,19 +66,13 @@ def main() -> None:
         description_norm: product_has_reference(group)
         for description_norm, group in mapping.dropna(subset=["description_norm"]).groupby("description_norm")
     }
-    
+
     auto_unit_price: list[str] = []
     mapping_ok: list[str] = []
     mapping_incomplete: list[str] = []
     not_normalizable: list[str] = []
     unknown: list[str] = []
 
-
-    def product_has_reference(mapping_group: pd.DataFrame) -> bool:
-        return (
-            mapping_group["reference_quantity"].apply(has_value)
-            & mapping_group["reference_unit"].apply(has_value)
-        ).any()
 
     for description_norm, group in items.groupby("description_norm"):
         units = (
@@ -96,8 +97,7 @@ def main() -> None:
             else:
                 mapping_incomplete.append(description_norm)
 
-                continue
-
+            continue
 
         if has_real_unit:
             not_normalizable.append(description_norm)
