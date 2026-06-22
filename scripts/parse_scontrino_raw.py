@@ -32,7 +32,11 @@ PARSED_DIR = PROJECT_ROOT / "parsed_receipts"
 # Regex intenzionalmente piccole: riconoscono solo la forma testuale della riga.
 # La semantica viene trasformata subito in dataclass dedicate.
 
-ITEM_RE = re.compile(rf"^(?P<desc>.+?)\s+(?P<iva>{VAT_RE})\s+(?P<price>{PRICE_RE})$")
+ITEM_VAT_RE = rf"(?:{VAT_RE}|[A-Z]{{2}}\*)"
+
+ITEM_RE = re.compile(
+    rf"^(?P<desc>.+?)\s+(?P<iva>{ITEM_VAT_RE})\s+(?P<price>{PRICE_RE})$"
+)
 
 UNIT_QTY_RE = re.compile(rf"^(?P<qty>\d+)\s*x\s*(?P<unit>{UNIT_PRICE_RE})\s*EUR$")
 
@@ -41,8 +45,15 @@ DISCOUNT_RE = re.compile(
     re.IGNORECASE,
 )
 
+RECEIPT_DISCOUNT_RE = re.compile(
+    rf"^(?P<desc>.+?SCONTO.*?)\s+"
+    rf"(?P<percentage>-?\d+(?:[.,]\d+)?%)\s+"
+    rf"(?P<amount>{DISCOUNT_AMOUNT_RE})$",
+    re.IGNORECASE,
+)
+
 ADDRESS_RE = re.compile(
-    r"\b(via|viale|corso|piazza|strada|contrada)\b",
+    r"\b(via|viale|corso|piazza|piazzale|strada|contrada)\b",
     re.IGNORECASE,
 )
 
@@ -70,11 +81,21 @@ class DiscountLine:
 
 
 @dataclass(frozen=True)
+class ReceiptDiscountLine:
+    line_index: int
+    raw_line: str
+    description_raw: str
+    percentage: float
+    amount: float
+
+
+@dataclass(frozen=True)
 class ItemLine:
     line_index: int
     raw_line: str
     description_raw: str
-    vat_rate: int
+    vat_rate: int | None
+    vat_code: str | None
     price: float
 
 
@@ -93,7 +114,14 @@ class TotalLine:
     total: float
 
 
-ParsedLine = QuantityLine | DiscountLine | ItemLine | ServiceLine | TotalLine
+ParsedLine = (
+    QuantityLine
+    | DiscountLine
+    | ReceiptDiscountLine
+    | ItemLine
+    | ServiceLine
+    | TotalLine
+)
 LineParser = Callable[[int, str], ParsedLine | None]
 
 
@@ -104,6 +132,15 @@ def euro_to_float(value: str) -> float:
 def vat_rate_to_int(value: str) -> int:
     normalized = value.removesuffix("%").replace(",", ".")
     return int(float(normalized))
+
+
+def parse_item_vat(value: str) -> tuple[int | None, str | None]:
+    normalized = value.strip().upper()
+
+    if normalized.endswith("%"):
+        return vat_rate_to_int(normalized), None
+
+    return None, normalized
 
 
 def parse_datetime(date_value: str, time_value: str) -> str:
@@ -202,6 +239,30 @@ def parse_discount_line(line_index: int, line: str) -> DiscountLine | None:
     )
 
 
+def parse_receipt_discount_line(
+    line_index: int,
+    line: str,
+) -> ReceiptDiscountLine | None:
+    match = RECEIPT_DISCOUNT_RE.match(line)
+
+    if not match:
+        return None
+
+    percentage = float(
+        match.group("percentage")
+        .removesuffix("%")
+        .replace(",", ".")
+    )
+
+    return ReceiptDiscountLine(
+        line_index=line_index,
+        raw_line=line,
+        description_raw=match.group("desc").strip(),
+        percentage=percentage,
+        amount=euro_to_float(match.group("amount")),
+    )
+
+
 def parse_service_line(line_index: int, line: str) -> ServiceLine | None:
     match = SERVICE_RE.match(line)
 
@@ -222,11 +283,14 @@ def parse_item_line(line_index: int, line: str) -> ItemLine | None:
     if not match:
         return None
 
+    vat_rate, vat_code = parse_item_vat(match.group("iva"))
+
     return ItemLine(
         line_index=line_index,
         raw_line=line,
         description_raw=match.group("desc"),
-        vat_rate=vat_rate_to_int(match.group("iva")),
+        vat_rate=vat_rate,
+        vat_code=vat_code,
         price=euro_to_float(match.group("price")),
     )
 
@@ -236,6 +300,7 @@ BODY_LINE_PARSERS: list[LineParser] = [
     parse_unit_quantity_line,
     parse_weight_quantity_line,
     parse_discount_line,
+    parse_receipt_discount_line,
     parse_service_line,
     parse_item_line,
 ]
@@ -245,6 +310,7 @@ ITEM_AREA_LINE_PARSERS: list[LineParser] = [
     parse_unit_quantity_line,
     parse_weight_quantity_line,
     parse_discount_line,
+    parse_receipt_discount_line,
     parse_service_line,
     parse_item_line,
 ]
@@ -279,10 +345,10 @@ def is_probable_receipt_body_line(line: str) -> bool:
     return is_items_header(line) or parse_known_body_line(-1, line) is not None
 
 def is_summary_line(line: str) -> bool:
-    upper_line = line.upper()
+    normalized = re.sub(r"[\s-]+", "", line.upper())
     return (
-        upper_line.startswith("VALORE SCONTI")
-        or upper_line.startswith("SUBTOTALE")
+        normalized.startswith("VALORESCONTI")
+        or normalized.startswith("SUBTOTALE")
     )
 
 def is_separator_line(line: str) -> bool:
@@ -456,6 +522,9 @@ def build_item_from_item_line(
         "warnings": [],
     }
 
+    if parsed.vat_code is not None:
+        item["vat_code"] = parsed.vat_code
+
     if pending_qty is None:
         item["unit"] = "unit"
         return item
@@ -476,6 +545,21 @@ def build_discount_from_discount_line(parsed: DiscountLine) -> dict:
         "amount": parsed.amount,
         "raw_lines": [parsed.raw_line],
         "applied_to_line_index": None,
+    }
+
+
+def build_receipt_discount(
+    parsed: ReceiptDiscountLine,
+) -> dict:
+    return {
+        "line_index": parsed.line_index,
+        "description_raw": parsed.description_raw,
+        "vat_rate": None,
+        "percentage": parsed.percentage,
+        "amount": parsed.amount,
+        "raw_lines": [parsed.raw_line],
+        "applied_to_line_index": None,
+        "scope": "receipt",
     }
 
 
@@ -565,6 +649,10 @@ def parse_raw_lines(
             discounts.append(discount)
             continue
 
+        if isinstance(parsed, ReceiptDiscountLine):
+            discounts.append(build_receipt_discount(parsed))
+            continue
+
         if isinstance(parsed, ServiceLine):
             items.append(build_item_from_service_line(parsed))
             continue
@@ -592,7 +680,11 @@ def parse_raw_lines(
     if total is not None and not match_total:
         warnings.append("totale_non_validato")
 
-    if any(discount["applied_to_line_index"] is None for discount in discounts):
+    if any(
+        discount.get("scope", "item") == "item"
+        and discount["applied_to_line_index"] is None
+        for discount in discounts
+    ):
         warnings.append("sconti_non_ancora_allocati_agli_articoli")
 
     return {
