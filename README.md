@@ -109,13 +109,21 @@ After all, parsing existed long before AI.
 
 ## Real Example
 
+The following anonymized receipt is a real input processed by the pipeline:
+
+![Anonymized receipt example](docs/images/20260607_154438_prep.jpeg)
+
 ### OCR Output
 
 ```json
 {
   "raw_lines": [
-    "MANGO S&I GR.380 EST 4% 4,78",
-    "2 x 2,39 EUR"
+    "9 x 1,690 EUR",
+    "*BEV.SZ SOIA 1 PIACER 22% 15,21",
+    "TOTALE COMPLESSIVO 15,21",
+    "di cui IVA 2,74",
+    "Pagamento elettronico 15,21",
+    "Importo pagato 15,21"
   ]
 }
 ```
@@ -124,12 +132,14 @@ After all, parsing existed long before AI.
 
 ```json
 {
-  "description": "MANGO S&I GR.380 EST",
-  "quantity": 2,
-  "unit_price": 2.39,
-  "net_amount": 4.78
+  "description": "*BEV.SZ SOIA 1 PIACER",
+  "quantity": 9,
+  "unit_price": 1.69,
+  "net_amount": 15.21
 }
 ```
+
+This example highlights a common receipt pattern: quantity and unit price are printed on one line, while the product description and total amount appear on the next one.
 
 ---
 

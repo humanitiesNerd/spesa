@@ -4,6 +4,9 @@ __pycache__/
 *.pyc
 *.jpg
 *.jpeg
+!docs/images/
+!docs/images/*.jpeg
+!docs/images/*.png
 
 .env
 __pycache__/
