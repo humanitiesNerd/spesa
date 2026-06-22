@@ -1,0 +1,11 @@
+description_norm,purchase_date,finished_date,note
+prosciutto_crudo,2026-06-05,2026-06-20,"Trancio da 18,74 EUR, circa 1,339 kg assumendo 14 EUR/kg. Data di fine stimata dal riacquisto del 2026-06-20, non osservata direttamente. Durata stimata 15 giorni; consumo medio circa 89 g/giorno."
+prosciutto_crudo,2026-06-20,,"Acquistato il 2026-06-20; importo 18,74 EUR. Ancora disponibile al 2026-06-20."
+mozzarella_light_granarolo,2026-06-16,,"Receipt 20260616_115813, riga 10; descrizione raw 'GRANAR OGGI PUOI MOZ'; importo 4,58 EUR. Ancora in frigo al 2026-06-20."
+iogurt_greco_0,2026-06-16,,"Receipt 20260616_115813, riga 12; descrizione raw 'YOMO DELTA YOG.GREC.'; importo 4,99 EUR. Ancora in frigo al 2026-06-20."
+ricotta,2026-06-17,2026-06-18,"Macelleria artigianale; 0,378 kg; importo 3,36 EUR. Consumata metà il 2026-06-17 e metà il 2026-06-18."
+sovracosce_pollo,2026-06-17,,"Macelleria artigianale; 4 sovracosce, 0,942 kg totali; importo 7,44 EUR. Tre sovracosce ancora in frigo al 2026-06-20."
+cacao_amaro,2026-05-15,,"Receipt 20260515_112924, riga 8; descrizione raw 'CACAO AMARO CONAD G.'; importo 5,44 EUR. Data di esaurimento non ricostruita."
+cacao_amaro,2026-05-28,,"Receipt 20260528_134200, riga 22; descrizione raw 'CACAO AMARO CONAD G.'; importo 5,44 EUR. Data di esaurimento non ricostruita."
+cacao_amaro,2026-06-11,,"Receipt 20260612_084455, riga 12; data scontrino 2026-06-11; descrizione raw 'CACAO AMARO CONAD G.'; importo 5,44 EUR. Data di esaurimento non ricostruita."
+latte_soia_piacersi,2026-06-06,,"Receipt 20260607_154438, riga 8; descrizione raw '*BEV.SZ SOIA 1 PIACER'; 9 confezioni da 1 L a 1,69 EUR, totale 15,21 EUR. Al 2026-06-20 restano circa 3,2 confezioni: consumate circa 5,8 L in 14 giorni, media stimata 0,414 L/giorno (circa 12,4 L e 21,00 EUR ogni 30 giorni al prezzo osservato)."
