@@ -48,21 +48,19 @@ This principle drives the entire architecture of the project.
 
 ---
 
-## Technical aspects
+## What this project demonstrates
 
-This project includes:
+Spesa is a personal project, but it is designed around problems that commonly appear in real-world data pipelines:
 
-* extraction of structured data from semi-structured documents
-* ETL pipeline design
-* deterministic parsing
-* JSON-based data modeling
-* data normalization and classification
-* automated consistency validation
-* regression testing with versioned fixtures
+* extracting structured information from inconsistent, semi-structured documents
+* separating probabilistic OCR from deterministic parsing and validation
+* preserving intermediate artifacts for inspection, debugging and reprocessing
+* normalizing product, quantity, price and store data
+* handling incomplete, ambiguous and manually corrected records
+* validating outputs through reproducible tests, explicit warnings and accounting checks
+* producing analysis-ready datasets from raw inputs
 
-The goal is not to showcase a particular technology.
-
-The goal is to build an observable and verifiable pipeline that transforms unstructured data into analyzable datasets.
+The project favors transparent, recoverable transformations over opaque end-to-end automation.
 
 ---
 
