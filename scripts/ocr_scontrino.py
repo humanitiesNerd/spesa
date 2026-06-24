@@ -9,6 +9,18 @@ import sys
 import tempfile
 
 
+
+
+from functools import lru_cache
+
+from openai import OpenAI
+
+
+@lru_cache(maxsize=1)
+def get_openai_client() -> OpenAI:
+    return OpenAI()
+
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 TRANSCRIPTIONS_DIR = PROJECT_ROOT / "trascrizioni"
 
@@ -70,6 +82,7 @@ def image_to_base64_jpeg(image_path: Path) -> str:
 
 
 def ocr_scontrino(image_path: Path) -> dict:
+    client = get_openai_client()
     if not image_path.exists():
         raise FileNotFoundError(f"File non trovato: {image_path}")
 
