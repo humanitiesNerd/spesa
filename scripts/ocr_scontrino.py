@@ -64,7 +64,7 @@ Regole:
 load_dotenv(PROJECT_ROOT / ".env")
 register_heif_opener()
 
-client = get_openai_client()
+#client = get_openai_client()
 
 
 def image_to_base64_jpeg(image_path: Path) -> str:
