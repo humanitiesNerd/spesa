@@ -1,5 +1,7 @@
 # Spesa
 
+[![Tests](https://github.com/humanitiesNerd/spesa/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/humanitiesNerd/spesa/actions/workflows/tests.yml)
+
 A local pipeline for transforming grocery receipt photos into structured, verifiable and analyzable data.
 
 The project started from a personal need: understanding where my grocery budget actually goes without relying on proprietary applications or manual data entry.
