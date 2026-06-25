@@ -2,118 +2,105 @@
 
 [![Tests](https://github.com/humanitiesNerd/spesa/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/humanitiesNerd/spesa/actions/workflows/tests.yml)
 
-A local pipeline for transforming grocery receipt photos into structured, verifiable and analyzable data.
+Spesa is a Python pipeline that turns grocery receipt photos into line-item data for personal budget analysis.
 
-The project started from a personal need: understanding where my grocery budget actually goes without relying on proprietary applications or manual data entry.
+Most expense trackers record where a purchase was made and how much it cost. Spesa focuses on **what was bought**: products, quantities, unit prices, discounts and totals. This makes it possible to analyze spending by product, category, shop or practical use, and to compare prices over time.
 
-## Motivation
+Spesa is free and open-source software. Its OCR stage currently relies on OpenAI's proprietary hosted API, while parsing, validation, enrichment and analysis are performed locally by inspectable code. This keeps the resulting dataset under the user's control without relying on a proprietary expense-tracking application.
 
-I wanted a detailed breakdown of my grocery spending.
+The project currently targets my own Italian grocery receipts. It is a personal tool under active development, not a universal receipt-scanning application.
 
-For years, my understanding of where my money went was approximative. I knew the total amount, but I had no reliable way to answer questions such as:
+## Quick start
 
+### Requirements
 
-* How much do specific dietary choices actually cost?
-* Which categories consume the largest share of my budget?
-* Which products do I buy most often?
-* How do prices change over time?
-* given an item, could I buy it cheaper in a different shop ?
+* Python 3.12+
+* [uv](https://docs.astral.sh/uv/)
+* an OpenAI API key for OCR transcription
+* Ubuntu or WSL recommended
 
+Install the dependencies:
 
-The workflow is intentionally simple:
-
-* I take a photo of every receipt.
-* Syncthing automatically transfers the images from my phone to my PC.
-* An OpenAI model performs OCR transcription.
-* A local parser reconstructs products, quantities, discounts and totals.
-* The resulting data can be analyzed with tools such as jq, pandas or SQLite.
-
-The goal is not OCR itself.
-
-The goal is to build a reliable dataset of personal spending data.
-
----
-
-## Design Principle
-
-Every stage of the pipeline produces an inspectable artifact.
-
-There are no opaque transformations:
-
-```text
-photo → OCR output → parsed JSON → analysis
+```bash
+uv sync
 ```
 
-Each stage can be inspected, validated, corrected or re-executed independently.
+Create a `.env` file:
 
-This principle drives the entire architecture of the project.
+```text
+OPENAI_API_KEY=...
+```
 
----
+Process one receipt:
 
-## What this project demonstrates
+```bash
+uv run python -m scripts.processa_scontrino scontrini_originali/RECEIPT.heic
+```
 
-Spesa is a personal project, but it is designed around problems that commonly appear in real-world data pipelines:
+The command produces:
 
-* extracting structured information from inconsistent, semi-structured documents
-* separating probabilistic OCR from deterministic parsing and validation
-* preserving intermediate artifacts for inspection, debugging and reprocessing
-* normalizing product, quantity, price and store data
-* handling incomplete, ambiguous and manually corrected records
-* validating outputs through reproducible tests, explicit warnings and accounting checks
-* producing analysis-ready datasets from raw inputs
+```text
+trascrizioni/RECEIPT.json
+parsed_receipts/RECEIPT.parsed.json
+```
 
-The project favors transparent, recoverable transformations over opaque end-to-end automation.
+Run the public test suite:
 
----
+```bash
+uv run pytest -v
+```
 
-## Architecture
+The tests do not require an API key, real receipt images or an OCR request.
 
-OCR and semantic interpretation are completely separated.
+> Some directory names are still in Italian because the project began as a personal tool.
 
-The AI model is responsible only for faithfully transcribing the receipt line by line.
+## What is it for?
 
-The transformation into structured data is performed entirely by local deterministic code.
+Spesa was created to answer questions such as:
 
-### Why not let the LLM do everything?
 
-An LLM is excellent at reading receipts.
+* How much do particular dietary choices cost?
+* Can I adjust my dietary habits in order to spend a bit less ?
+* Which products consume the largest share of my grocery budget?
+* Could I buy the same item more cheaply at another shop?
+* How often do I buy a product, and how does its price change?
 
-It is much less reliable when it has to:
 
-* interpret quantities
-* associate discounts with products
-* validate totals
-* maintain consistent behavior over time
+Budget analysis is the primary goal. Nutrition-related classification is a smaller, secondary layer built on the same purchase data.
 
-An early version of the project delegated semantic interpretation to the model.
+## How it works
 
-While the results were often correct, they were difficult to validate and not fully reproducible.
+```text
+receipt photo
+    ↓
+OCR transcription
+    ↓
+ordered raw text lines
+    ↓
+deterministic Python parser
+    ↓
+products, quantities, prices and discounts
+    ↓
+check against the printed receipt total
+    ↓
+normalization and analysis
+```
 
-In particular, the model occasionally struggled with:
+OpenAI is currently used only for visual transcription. The model returns ordered text lines; it does not decide which lines represent products, quantities or discounts.
 
-* promotional discounts
-* multi-quantity purchases
-* relationships between related lines
-* accounting consistency checks
+Everything after transcription is handled by local deterministic code. The parser reconstructs the receipt and checks whether item amounts and discounts reconcile with the final printed total.
 
-I therefore adopted a different architecture:
+There is no alternative OCR backend yet. The raw-line JSON format provides a clear boundary where another OCR implementation could be added later.
 
-* OCR performed by the model
-* parsing performed by deterministic code
+This separation is intentional. An earlier version asked the model to both read and interpret each receipt. Its output was often plausible, but harder to reproduce, test and debug. Keeping OCR and parsing separate preserves inspectable intermediate files and makes parser behavior testable with fixtures.
 
-This separation reduces complexity and makes the system testable, observable and reproducible.
+## Real example
 
-After all, parsing existed long before AI.
-
----
-
-## Real Example
-
-The following anonymized receipt is a real input processed by the pipeline:
+The following anonymized image is a real input. The raw text is in Italian because the project currently works with Italian supermarket receipts.
 
 ![Anonymized receipt example](docs/images/20260607_154438_prep.jpeg)
 
-### OCR Output
+The OCR stage returns ordered text only:
 
 ```json
 {
@@ -128,7 +115,7 @@ The following anonymized receipt is a real input processed by the pipeline:
 }
 ```
 
-### Parsed Output
+The local parser reconstructs the purchased item:
 
 ```json
 {
@@ -139,253 +126,68 @@ The following anonymized receipt is a real input processed by the pipeline:
 }
 ```
 
-This example highlights a common receipt pattern: quantity and unit price are printed on one line, while the product description and total amount appear on the next one.
+Here, quantity and unit price appear on one line, while the product description and total appear on the next. That relationship is reconstructed by explicit parsing rules rather than by the OCR model.
 
----
-
-## Processing Flow
+For supported layouts, the parser also performs an accounting check:
 
 ```text
-receipt photo
-    ↓
-   OCR
-    ↓
-raw JSON
-    ↓
-deterministic Python parser
-    ↓
-validated structured JSON
+sum(item amounts) + discounts == printed receipt total
 ```
 
----
+A successful match does not prove that every OCR character is correct. It is a practical way to expose missing items, misread amounts or incorrectly associated discounts.
 
-## Philosophy
+## Normalization and analysis
 
-* OCR separated from semantics
-* observable pipeline
-* deterministic local parsing
-* no opaque model reasoning
-* mathematical validation of totals
-* inspectable outputs
-* versioned fixtures
-* regression testing with pytest
+Receipt descriptions are progressively mapped to a consistent product taxonomy through an explicit CSV file. Unknown products can be added to the mapping for later manual classification.
 
----
+![Product mapping](docs/images/product_mapping.png)
 
-## Product Taxonomy
+The enriched data can be analyzed with Python, pandas, jq, SQLite or other tools.
 
-Products are progressively normalized and classified through an explicit CSV-based mapping.
+### Spending by product
 
-This allows multiple receipts to converge toward a consistent internal representation while keeping the classification process transparent and editable.
+![Spending by product](docs/images/spesa_per_prodotto.png)
 
-![Product Mapping](docs/images/product_mapping.png)
+### Spending by practical function
 
----
+Products may also be grouped by use, for example `ready_to_eat_protein`, `breakfast_base` or `fresh_side_dish`.
 
-## Project Structure
+![Spending by function](docs/images/spesa_per_funzione.png)
+
+## Current scope and limitations
+
+The parser currently supports receipt layouts encountered in my own data, including:
+
+* Conad and Dok receipts;
+* multiline quantity patterns such as `2 x 2,39 EUR`;
+* product discounts;
+* reconciliation with the final total.
+
+Confidence is highest on layouts represented by test fixtures. Unsupported supermarkets, new promotional formats and OCR mistakes may require new rules or manual corrections.
+
+When an edge case appears, it is added as a versioned fixture and protected by a regression test. The project does not yet claim broad compatibility with arbitrary receipts.
+
+## Project structure
 
 ```text
 fixtures/             versioned test fixtures
-logs/                 local logs
 scripts/              Python scripts
 scontrini_originali/  original receipt images
+trascrizioni/         raw OCR JSON (gitignored)
 parsed_receipts/      parsed output (gitignored)
 tests/                pytest test suite
-trascrizioni/         raw OCR JSON (gitignored)
 ```
-
----
-
-
-## Requirements
-
-* Python 3.12+
-* uv
-* OpenAI API key (only for OCR functionality)
-* Ubuntu or WSL recommended
-
----
-
-## Setup
-
-Install dependencies using uv:
-
-```bash
-uv sync
-```
-
-Create a `.env` file:
-
-```text
-OPENAI_API_KEY=...
-```
-
-Activate the virtual environment if desired:
-
-```bash
-source .venv/bin/activate
-```
-
-Alternatively, commands can be executed directly through uv:
-
-```bash
-uv run <command>
-```
-
----
-
-## Usage
-
-Process a single receipt:
-
-```bash
-python -m scripts.processa_scontrino scontrini_originali/RECEIPT.heic
-```
-
-Outputs:
-
-```text
-trascrizioni/RECEIPT.json
-parsed_receipts/RECEIPT.parsed.json
-```
-
----
-
-## Analysis
-
-Once parsed, receipts can be analyzed using pandas, jq or any other data-processing tool.
-
-### Spending by Product
-
-![Spending by Product](docs/images/spesa_per_prodotto.png)
-
-### Spending by Function
-
-Products are grouped not only by product category but also by practical function.
-
-Examples include:
-
-* ready_to_eat_protein
-* protein_to_cook
-* breakfast_base
-* fresh_side_dish
-* cooking_staples
-
-This additional semantic layer makes it possible to analyze spending habits in terms of actual usage rather than purely commercial categories.
-
-![Spending by Function](docs/images/spesa_per_funzione.png)
-
----
-
-## Raw OCR Format
-
-The OCR stage only returns raw text lines:
-
-```json
-{
-  "raw_lines": [
-    "MANGO S&I GR.380 EST 4% 4,78",
-    "2 x 2,39 EUR"
-  ]
-}
-```
-
-No semantic interpretation is delegated to the model.
-
----
-
-## Parsing
-
-The local parser reconstructs:
-
-* products
-* quantities
-* unit prices
-* discounts
-* totals
-* accounting validation
-
-Example:
-
-```json
-{
-  "description": "MANGO S&I GR.380 EST",
-  "quantity": 2.0,
-  "unit_price": 2.39,
-  "price": 4.78
-}
-```
-
----
-
-## Validation
-
-The parser verifies that:
-
-```text
-sum(items) + discounts == receipt total
-```
-
-Example:
-
-```json
-{
-  "validation": {
-    "match_total": true
-  }
-}
-```
-
----
-
-## Testing
-
-Run the test suite:
-
-```bash
-uv run pytest -v
-```
-
-The public test suite does not require:
-
-* real receipts
-* OpenAI API access
-* OCR execution
-
-Versioned fixtures ensure that future parser changes do not break previously supported receipt formats.
-
----
-
-## Current Status
-
-Currently supports:
-
-* Conad receipts
-* Dok receipts
-* multiline quantities (`2 x 2,39 EUR`)
-* discounts
-* total validation
-
----
 
 ## Roadmap
 
-Planned improvements:
-
-* support for additional supermarket chains
-* expanded product categorization
-* historical price analysis
-* SQLite export
-* Beancount integration
-* protein cost analytics
-
----
-
+* make the OCR backend replaceable;
+* make the reports graphical;
+* support more supermarket layouts;
+* improve historical price comparisons;
+* expand product categorization;
+* export to SQLite and Beancount;
+* develop further budget and nutrition reports.
 
 ## License
 
-This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0).
-
-You are free to use, study, modify and redistribute this software under the terms of the license.
-
-The AGPL extends the copyleft requirements to network use, ensuring that modified versions made available as a service remain free software and that corresponding source code remains available to users.
+Spesa is licensed under the [Apache License 2.0](LICENSE.md).
